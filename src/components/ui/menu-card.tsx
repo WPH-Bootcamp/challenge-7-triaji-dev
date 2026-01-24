@@ -2,7 +2,7 @@ import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { Menu } from '@/types/Restaurant';
+import type { Menu } from '@/types/api';
 
 interface MenuCardProps {
   menu: Menu;
@@ -17,7 +17,7 @@ export default function MenuCard({ menu, onClick }: MenuCardProps) {
     >
       <div className='relative h-full w-32 shrink-0'>
         <Image
-          src={menu.imageUrl || '/images/menu-placeholder.jpg'}
+          src={menu.image || '/images/menu-placeholder.jpg'}
           alt={menu.name}
           fill
           className='object-cover'
@@ -29,7 +29,7 @@ export default function MenuCard({ menu, onClick }: MenuCardProps) {
             {menu.name}
           </h4>
           <p className='mb-1 line-clamp-1 text-xs text-neutral-500'>
-            {menu.restaurantName}
+            {menu.category}
           </p>
           <p className='line-clamp-2 text-xs text-neutral-400'>
             {menu.description}

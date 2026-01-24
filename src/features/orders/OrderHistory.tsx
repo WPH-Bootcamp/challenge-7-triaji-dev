@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useMyOrders } from './order.queries';
-import type { OrderStatus } from '@/services/types/common.types';
+import type { OrderStatus } from '@/types/api';
 
 // Format price in IDR
 function formatPrice(price: number): string {

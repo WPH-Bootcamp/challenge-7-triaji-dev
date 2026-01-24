@@ -6,7 +6,7 @@ import type {
   RegisterRequest,
   UpdateProfileRequest,
   User,
-} from '@/services/types/auth.types';
+} from '@/types/api';
 
 // Query keys for caching
 export const authKeys = {

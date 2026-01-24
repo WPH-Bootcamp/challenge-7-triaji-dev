@@ -26,7 +26,7 @@ import {
 } from './cart.queries';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import type { CartItem, CartGrouped } from '@/services/types/cart.types';
+import type { CartItem, CartGrouped } from '@/types/api';
 
 export function useCart() {
   const dispatch = useAppDispatch();

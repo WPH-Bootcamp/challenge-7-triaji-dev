@@ -6,7 +6,7 @@ import {
   formatDistance,
   getMockCoordinates,
 } from '@/lib/distance';
-import type { Restaurant } from '@/types/Restaurant';
+import type { Restaurant } from '@/types/api';
 
 interface GeolocationState {
   latitude: number | null;

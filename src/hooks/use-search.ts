@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { Restaurant, Menu } from '../types/Restaurant';
+import type { Restaurant, Menu } from '@/types/api';
 
 export function useSearchState() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -76,15 +76,15 @@ export function useSearchRestaurants({
       // Return mock restaurants
       const mockRestaurants: Restaurant[] = Array.from({ length: limit }).map(
         (_, i) => ({
-          id: `search-res-${page}-${i}`,
+          id: i + (page - 1) * limit + 1,
           name: `${query || 'Restaurant'} ${i + 1} (Page ${page})`,
-          rating: 4.5,
-          ratingCount: 100, // Added based on type definition
-          deliveryTime: '30 min',
-          distance: '1.2 km', // Added based on type definition
-          priceRange: '$$',
-          imageUrl: '/images/restaurant-placeholder.jpg',
-          categories: ['Mock Category'],
+          place: 'Jakarta',
+          star: 4.5,
+          logo: '/images/restaurant-placeholder.jpg',
+          images: ['/images/restaurant-placeholder.jpg'],
+          reviewCount: 100,
+          menuCount: 20,
+          priceRange: { min: 20000, max: 100000 },
           isOpen: true,
         })
       );
@@ -133,13 +133,12 @@ export function useSearchMenus({
     try {
       await new Promise((resolve) => setTimeout(resolve, 800));
       const mockMenus: Menu[] = Array.from({ length: limit }).map((_, i) => ({
-        id: `search-menu-${page}-${i}`,
+        id: i + (page - 1) * limit + 1,
         name: `${query || 'Dish'} ${i + 1}`,
         price: 50000,
         description: 'Delicious food item description.',
-        imageUrl: '/images/menu-placeholder.jpg',
-        restaurantName: 'Mock Restaurant',
-        category: 'Main Course', // Added based on type definition
+        image: '/images/menu-placeholder.jpg',
+        category: 'Main Course',
       }));
 
       setData({

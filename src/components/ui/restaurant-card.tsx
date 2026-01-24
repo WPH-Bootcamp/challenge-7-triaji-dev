@@ -1,6 +1,6 @@
 import { Star } from 'lucide-react';
 import { motion } from 'motion/react';
-import type { Restaurant } from '@/types/Restaurant';
+import type { Restaurant } from '@/types/api';
 import { useScreenSize } from '@/hooks/use-screen-size';
 import { useGeolocationContext } from '@/components/providers/geolocation-provider';
 

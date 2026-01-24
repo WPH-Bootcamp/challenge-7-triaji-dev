@@ -1,4 +1,4 @@
-import type { Restaurant } from '@/types/Restaurant';
+import type { Restaurant } from '@/types/api';
 
 /**
  * Calculate distance between two coordinates using Haversine formula

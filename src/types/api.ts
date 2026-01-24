@@ -1,4 +1,15 @@
-// API Response types
+// ===========================
+// COMMON TYPES
+// ===========================
+export type OrderStatus =
+  | 'preparing'
+  | 'on_the_way'
+  | 'delivered'
+  | 'done'
+  | 'cancelled';
+
+export type PaymentMethod = 'credit_card' | 'debit_card' | 'cash' | 'e_wallet';
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
@@ -15,30 +26,39 @@ export interface PaginationMeta {
 
 export interface PaginatedResponse<T> {
   data: T[];
-  pagination: PaginationMeta;
+  meta: PaginationMeta;
 }
 
-// User & Auth types
+export interface LoadingState {
+  isLoading: boolean;
+  error: string | null;
+}
+
+export interface AsyncState<T = unknown> extends LoadingState {
+  data: T | null;
+}
+
+// ===========================
+// AUTH TYPES
+// ===========================
 export interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
   phone: string;
-  role: 'customer' | 'admin' | 'staff';
-  avatar?: string;
+  avatarUrl?: string;
+}
+
+export interface RegisterRequest {
+  name: string; // minLength: 2
+  email: string; // email format
+  phone: string;
+  password: string; // minLength: 6
 }
 
 export interface LoginRequest {
   email: string;
   password: string;
-}
-
-export interface RegisterRequest {
-  name: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
 }
 
 export interface LoginResponse {
@@ -48,7 +68,9 @@ export interface LoginResponse {
 
 export interface UpdateProfileRequest {
   name?: string;
+  email?: string;
   phone?: string;
+  avatar?: File; // For client-side handling (multipart/form-data)
 }
 
 export interface ChangePasswordRequest {
@@ -56,7 +78,9 @@ export interface ChangePasswordRequest {
   newPassword: string;
 }
 
-// Restaurant types
+// ===========================
+// RESTAURANT & MENU TYPES
+// ===========================
 export interface Restaurant {
   id: number;
   name: string;
@@ -74,21 +98,6 @@ export interface Restaurant {
   isOpen?: boolean;
 }
 
-export interface RestaurantDetail extends Restaurant {
-  menus: Menu[];
-  reviews: Review[];
-}
-
-export interface RestaurantFilters {
-  location?: string;
-  priceMin?: number;
-  priceMax?: number;
-  rating?: number;
-  page?: number;
-  limit?: number;
-}
-
-// Menu types
 export interface Menu {
   id: number;
   name: string;
@@ -96,23 +105,42 @@ export interface Menu {
   price: number;
   image: string;
   category: string;
+  isBestSeller?: boolean;
 }
 
-// Cart types
+export interface RestaurantDetail extends Restaurant {
+  menus: Menu[];
+  reviews: Review[];
+}
+
+export interface RestaurantFilters {
+  location?: string;
+  range?: number;
+  priceMin?: number;
+  priceMax?: number;
+  rating?: number;
+  category?: string;
+  page?: number;
+  limit?: number;
+}
+
+// ===========================
+// CART TYPES
+// ===========================
 export interface CartItem {
   id: number;
   menuId: number;
+  restaurantId: number;
+  name: string;
+  price: number;
   quantity: number;
-  itemTotal: number;
-  menu: {
-    name: string;
-    price: number;
-    image: string;
-  };
-  restaurant: {
-    id: number;
-    name: string;
-  };
+  imageUrl: string;
+}
+
+export interface CartGrouped {
+  restaurantId: number;
+  restaurantName: string;
+  items: CartItem[];
 }
 
 export interface Cart {
@@ -126,39 +154,50 @@ export interface Cart {
 export interface AddToCartRequest {
   restaurantId: number;
   menuId: number;
-  quantity: number;
+  quantity?: number; // default: 1
 }
 
 export interface UpdateCartItemRequest {
   quantity: number;
 }
 
-// Order types
-export type OrderStatus =
-  | 'preparing'
-  | 'on_the_way'
-  | 'delivered'
-  | 'done'
-  | 'cancelled';
-export type PaymentMethod = 'credit_card' | 'debit_card' | 'cash' | 'e_wallet';
+// ===========================
+// ORDER TYPES
+// ===========================
+export interface CheckoutItem {
+  menuId: number;
+  quantity: number;
+}
+
+export interface CheckoutRestaurant {
+  restaurantId: number;
+  items: CheckoutItem[];
+}
+
+export interface CheckoutRequest {
+  restaurants: CheckoutRestaurant[];
+  deliveryAddress: string;
+  phone?: string;
+  paymentMethod?: string;
+  notes?: string;
+}
 
 export interface Order {
-  id: number;
+  id?: number;
   transactionId: string;
-  status: OrderStatus;
+  restaurantId: number;
+  restaurantName: string;
   totalAmount: number;
-  deliveryAddress: string;
-  paymentMethod: PaymentMethod;
-  notes?: string;
-  createdAt: string;
-  restaurant: {
-    name: string;
-    location: string;
-  };
+  status: OrderStatus;
   items: OrderItem[];
+  createdAt: string;
+  deliveryAddress?: string;
+  paymentMethod?: PaymentMethod;
+  notes?: string;
 }
 
 export interface OrderItem {
+  menuId?: number;
   menuName: string;
   quantity: number;
   price: number;
@@ -189,11 +228,18 @@ export interface UpdateOrderStatusRequest {
   status: OrderStatus;
 }
 
-// Review types
+// ===========================
+// REVIEW TYPES
+// ===========================
 export interface Review {
   id: number;
-  star: number;
-  comment: string;
+  userId?: number;
+  userName?: string;
+  restaurantId?: number;
+  transactionId?: string;
+  star: number; // 1-5
+  comment?: string;
+  menuIds?: number[];
   createdAt: string;
   user?: {
     name: string;
@@ -209,12 +255,13 @@ export interface CreateReviewRequest {
   transactionId: string;
   restaurantId: number;
   star: number;
-  comment: string;
+  comment?: string;
+  menuIds?: number[];
 }
 
 export interface UpdateReviewRequest {
-  star: number;
-  comment: string;
+  star?: number;
+  comment?: string;
 }
 
 export interface ReviewFilters {
@@ -248,15 +295,4 @@ export interface MyReviewsResponse {
     totalReviews: number;
     averageRating: number;
   };
-}
-
-// Loading states
-export interface LoadingState {
-  isLoading: boolean;
-  error: string | null;
-}
-
-// Async thunk states
-export interface AsyncState<T = unknown> extends LoadingState {
-  data: T | null;
 }

@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/services/api-client';
-import type { CheckoutRequest, Order } from '@/services/types/order.types';
 import type {
+  CheckoutRequest,
+  Order,
   OrderStatus,
   PaginatedResponse,
-} from '@/services/types/common.types';
+} from '@/types/api';
 import { cartKeys } from '@/features/cart/cart.queries';
 
 // Query keys

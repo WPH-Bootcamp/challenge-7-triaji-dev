@@ -5,8 +5,8 @@ import type {
   Restaurant,
   RestaurantDetail,
   RestaurantFilters,
-} from '@/services/types/restaurant.types';
-import type { PaginatedResponse } from '@/services/types/common.types';
+  PaginatedResponse,
+} from '@/types/api';
 
 // Query keys for caching
 export const restaurantKeys = {

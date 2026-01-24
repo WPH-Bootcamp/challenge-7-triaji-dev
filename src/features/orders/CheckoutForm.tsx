@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { Loader2, MapPin, Phone, CreditCard, FileText } from 'lucide-react';
-import type { CheckoutRestaurant } from '@/services/types/order.types';
+import type { CheckoutRestaurant } from '@/types/api';
 
 // Format price in IDR
 function formatPrice(price: number): string {

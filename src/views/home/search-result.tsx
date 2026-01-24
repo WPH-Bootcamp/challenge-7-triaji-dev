@@ -10,7 +10,7 @@ import Searchbar from './searchbar';
 import { useScreenSize } from '@/hooks/use-screen-size';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/constants';
-import type { Restaurant } from '@/types/Restaurant';
+import type { Restaurant } from '@/types/api';
 
 interface SearchResultProps {
   searchQuery: string;

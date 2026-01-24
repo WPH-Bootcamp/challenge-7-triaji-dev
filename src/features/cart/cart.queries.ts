@@ -4,7 +4,7 @@ import type {
   CartGrouped,
   AddToCartRequest,
   UpdateCartItemRequest,
-} from '@/services/types/cart.types';
+} from '@/types/api';
 
 // Query keys
 export const cartKeys = {

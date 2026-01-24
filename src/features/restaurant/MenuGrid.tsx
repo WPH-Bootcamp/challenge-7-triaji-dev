@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MenuItem from './MenuItem';
-import type { Menu } from '@/services/types/restaurant.types';
+import type { Menu } from '@/types/api';
 
 interface MenuGridProps {
   menus: Menu[];

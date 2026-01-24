@@ -49,7 +49,7 @@ export default function Home() {
             onSearch={handleSearchFromRecommended}
           />
         ) : (
-          <Recommended onToggleSearchMode={handleToggleSearchMode} />
+          <Recommended />
         )}
       </div>
     </GeolocationProvider>

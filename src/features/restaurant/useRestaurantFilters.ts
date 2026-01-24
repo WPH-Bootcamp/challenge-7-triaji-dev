@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import type { RestaurantFilters } from '@/services/types/restaurant.types';
+import type { RestaurantFilters } from '@/types/api';
 
 export function useRestaurantFilters() {
   const router = useRouter();

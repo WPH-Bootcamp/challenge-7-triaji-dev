@@ -8,7 +8,7 @@ import SkeletonCard from './skeleton-card';
 import { useScreenSize } from '@/hooks/use-screen-size';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/constants';
-import type { Restaurant } from '@/types/Restaurant';
+import type { Restaurant } from '@/types/api';
 
 function Recommended() {
   const router = useRouter();
@@ -58,7 +58,7 @@ function Recommended() {
 
   return (
     <div>
-      <div className='px-4 md:px-30 mb-8 flex flex-row items-center justify-between'>
+      <div className='mb-8 flex flex-row items-center justify-between px-4 md:px-30'>
         <h1 className='display-md-extrabold'>Recommended</h1>
         <p
           className='text-lg-extrabold text-primary cursor-pointer hover:underline'

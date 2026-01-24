@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Plus, Minus, ShoppingCart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { Menu } from '@/services/types/restaurant.types';
+import type { Menu } from '@/types/api';
 
 interface MenuItemProps {
   menu: Menu;
@@ -50,7 +50,7 @@ export default function MenuItem({ menu, onAddToCart }: MenuItemProps) {
       {/* Image section */}
       <div className='relative h-40 w-full overflow-hidden'>
         <Image
-          src={menu.imageUrl || '/images/menu-placeholder.jpg'}
+          src={menu.image || '/images/menu-placeholder.jpg'}
           alt={menu.name}
           fill
           className='object-cover transition-transform duration-300 group-hover:scale-105'
