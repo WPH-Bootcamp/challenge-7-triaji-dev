@@ -5,7 +5,7 @@ import Hero from '@/views/home/hero';
 import HomeMenu from '@/views/home/home-menu';
 import Recommended from '@/views/home/recommended';
 import SearchResult from '@/views/home/search-result';
-import { useSearchState } from '@/hooks/use-search';
+import { useSearchState } from '@/features/restaurant/use-search';
 import { GeolocationProvider } from '@/components/providers/geolocation-provider';
 
 export default function HomePage() {

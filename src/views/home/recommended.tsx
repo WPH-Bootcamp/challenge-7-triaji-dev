@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSearchRestaurants } from '@/hooks/use-search';
+import { useSearchRestaurants } from '@/features/restaurant/use-search';
 import RestaurantCard from '@/components/ui/restaurant-card';
 import SkeletonCard from './skeleton-card';
 import { useScreenSize } from '@/hooks/use-screen-size';
