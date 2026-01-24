@@ -8,8 +8,8 @@ import {
 
 function Footer() {
   return (
-    <footer className='bg-neutral-950 px-30 text-white'>
-      <div className='w-full px-4 py-12 md:py-16'>
+    <footer className='bg-neutral-950 px-4 text-white md:px-30'>
+      <div className='w-full py-12 md:py-16'>
         <div className='grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12'>
           {/* Brand Section */}
           <div className='space-y-6'>

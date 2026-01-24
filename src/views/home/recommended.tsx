@@ -58,7 +58,7 @@ function Recommended() {
 
   return (
     <div>
-      <div className='mx-auto mb-8 flex max-w-7xl flex-row items-center justify-between px-4 sm:px-6 lg:px-4'>
+      <div className='px-4 md:px-30 mb-8 flex flex-row items-center justify-between'>
         <h1 className='display-md-extrabold'>Recommended</h1>
         <p
           className='text-lg-extrabold text-primary cursor-pointer hover:underline'
@@ -68,7 +68,7 @@ function Recommended() {
         </p>
       </div>
 
-      <div className='mx-auto flex max-w-7xl flex-col gap-6 px-4 pb-10 sm:px-6 lg:px-4'>
+      <div className='flex flex-col gap-6 px-4 pb-10 md:px-30'>
         {/* Loading State */}
         {isLoading && currentPage === 1 && (
           <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>

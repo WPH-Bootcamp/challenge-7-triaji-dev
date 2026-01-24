@@ -1,52 +1,101 @@
-import { Star, Clock } from 'lucide-react';
-import Image from 'next/image';
-import { Card, CardContent } from '@/components/ui/card';
+import { Star } from 'lucide-react';
+import { motion } from 'motion/react';
 import type { Restaurant } from '@/types/Restaurant';
+import { useScreenSize } from '@/hooks/use-screen-size';
+import { useGeolocationContext } from '@/components/providers/geolocation-provider';
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
+  distance?: string;
   onClick?: () => void;
 }
 
-export default function RestaurantCard({
+function RestaurantCard({
   restaurant,
+  distance,
   onClick,
 }: RestaurantCardProps) {
+  const { calculateRestaurantDistance } = useGeolocationContext();
+  const { isMobile, isTablet } = useScreenSize();
+
+  const displayDistance = distance || calculateRestaurantDistance(restaurant);
+
+  const getImageSize = () => {
+    if (isMobile) return 'h-20 w-20';
+    if (isTablet) return 'h-25 w-25';
+    return 'h-30 w-30';
+  };
+
+  const getTextSize = () => {
+    if (isMobile)
+      return {
+        name: 'text-sm font-bold',
+        rating: 'text-xs',
+        location: 'text-xs text-gray-600',
+      };
+    return {
+      name: 'text-base font-bold',
+      rating: 'text-sm',
+      location: 'text-sm text-gray-600',
+    };
+  };
+
+  const textSizes = getTextSize();
+
   return (
-    <Card
-      className='group cursor-pointer overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg'
+    <motion.div
+      className={`flex cursor-pointer items-center gap-3 rounded-xl bg-white p-3 shadow-sm transition-all hover:shadow-md sm:rounded-2xl ${
+        isMobile ? 'p-3' : 'p-4'
+      }`}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       onClick={onClick}
     >
-      <div className='relative h-48 w-full overflow-hidden'>
-        <Image
-          src={restaurant.imageUrl || '/images/restaurant-placeholder.jpg'}
-          alt={restaurant.name}
-          fill
-          className='object-cover transition-transform duration-300 group-hover:scale-110'
+      <div
+        className={`shrink-0 overflow-hidden rounded-md sm:rounded-xl ${getImageSize()}`}
+      >
+        <img
+          src={
+            restaurant.images?.[0] || restaurant.logo || '/icons/bk-logo.png'
+          }
+          alt={`${restaurant.name || 'Restaurant'} logo`}
+          className='h-full w-full object-cover'
+          loading='lazy'
+          onError={(e) => {
+            const img = e.target as HTMLImageElement;
+            if (img.src === (restaurant.images?.[0] || '')) {
+              img.src = restaurant.logo || '/icons/bk-logo.png';
+            } else if (
+              img.src !==
+              window.location.origin + '/icons/bk-logo.png'
+            ) {
+              img.src = '/icons/bk-logo.png';
+            }
+          }}
         />
-        {restaurant.deliveryTime && (
-          <div className='absolute bottom-3 left-3 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-xs font-semibold shadow-sm backdrop-blur-sm'>
-            <Clock className='h-3 w-3' />
-            {restaurant.deliveryTime}
-          </div>
-        )}
       </div>
-      <CardContent className='p-4'>
-        <div className='mb-2 flex items-start justify-between'>
-          <h3 className='line-clamp-1 text-lg font-bold'>{restaurant.name}</h3>
-          <div className='flex items-center gap-1 rounded bg-green-50 px-1.5 py-0.5 text-sm font-bold text-green-700'>
-            <Star className='h-3 w-3 fill-current' />
-            <span>{restaurant.rating || 'N/A'}</span>
-          </div>
-        </div>
-        <div className='mb-3 flex items-center gap-2 text-sm text-neutral-500'>
-          <span>{restaurant.priceRange || '$$'}</span>
-          <span>•</span>
-          <span className='line-clamp-1'>
-            {restaurant.categories?.join(', ') || 'Mixed Cuisine'}
+
+      <div className='flex-1'>
+        <h3 className={`mb-1 ${textSizes.name}`}>
+          {restaurant.name || 'Unknown Restaurant'}
+        </h3>
+
+        <div className='mb-1 flex items-center gap-1'>
+          <Star className='h-3 w-3 fill-yellow-400 text-yellow-400' />
+          <span className={`${textSizes.rating} font-medium`}>
+            {(restaurant.star || 0).toFixed(1)}
           </span>
         </div>
-      </CardContent>
-    </Card>
+
+        <div className={`flex items-center gap-2 ${textSizes.location}`}>
+          <span>{restaurant.place || 'Unknown location'}</span>
+          <span>•</span>
+          <span>{displayDistance}</span>
+        </div>
+      </div>
+    </motion.div>
   );
 }
+
+export default RestaurantCard;

@@ -1,74 +1,160 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import {
+  calculateDistance,
+  formatDistance,
+  getMockCoordinates,
+} from '@/lib/distance';
+import type { Restaurant } from '@/types/Restaurant';
 
-interface GeolocationContextType {
-  location: { lat: number; lng: number } | null;
+interface GeolocationState {
+  latitude: number | null;
+  longitude: number | null;
+  loading: boolean;
   error: string | null;
-  isLoading: boolean;
+  hasRequested: boolean;
+}
+
+interface GeolocationContextType extends GeolocationState {
   requestLocation: () => void;
+  calculateRestaurantDistance: (restaurant: Restaurant) => string;
 }
 
 const GeolocationContext = createContext<GeolocationContextType | undefined>(
   undefined
 );
 
-export function GeolocationProvider({
-  children,
-  autoRequest = false,
-}: {
+interface GeolocationProviderProps {
   children: React.ReactNode;
   autoRequest?: boolean;
-}) {
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
-    null
-  );
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+}
+
+export const GeolocationProvider: React.FC<GeolocationProviderProps> = ({
+  children,
+  autoRequest = false,
+}) => {
+  const [state, setState] = useState<GeolocationState>({
+    latitude: null,
+    longitude: null,
+    loading: false,
+    error: null,
+    hasRequested: false,
+  });
+
+  const handleSuccess = (position: GeolocationPosition) => {
+    const { latitude, longitude } = position.coords;
+    setState((prev) => ({
+      ...prev,
+      latitude,
+      longitude,
+      loading: false,
+      error: null,
+    }));
+  };
+
+  const handleError = (error: GeolocationPositionError) => {
+    let errorMessage = 'An unknown error occurred.';
+
+    switch (error.code) {
+      case error.PERMISSION_DENIED:
+        errorMessage = 'Location access denied by user.';
+        break;
+      case error.POSITION_UNAVAILABLE:
+        errorMessage = 'Location information is unavailable.';
+        break;
+      case error.TIMEOUT:
+        errorMessage = 'Location request timed out.';
+        break;
+    }
+
+    setState((prev) => ({
+      ...prev,
+      loading: false,
+      error: errorMessage,
+    }));
+  };
 
   const requestLocation = () => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
+      setState((prev) => ({
+        ...prev,
+        loading: false,
+        error: 'Geolocation is not supported by this browser.',
+        hasRequested: true,
+      }));
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
+    setState((prev) => ({
+      ...prev,
+      loading: true,
+      error: null,
+      hasRequested: true,
+    }));
+
+    const options: PositionOptions = {
+      enableHighAccuracy: true,
+      maximumAge: 300000,
+      timeout: 10000,
+    };
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-        setIsLoading(false);
-      },
-      (err) => {
-        setError(err.message);
-        setIsLoading(false);
-      }
+      handleSuccess,
+      handleError,
+      options
     );
   };
 
-  useEffect(() => {
-    if (autoRequest) {
-      requestLocation();
+  const calculateRestaurantDistance = (restaurant: Restaurant): string => {
+    if (state.loading && state.hasRequested) {
+      return 'Loading...';
     }
-  }, [autoRequest]);
+
+    if (state.error || !state.latitude || !state.longitude) {
+      return '-';
+    }
+
+    const restaurantCoords = getMockCoordinates(restaurant.place);
+    const distanceKm = calculateDistance(
+      state.latitude,
+      state.longitude,
+      restaurantCoords.lat,
+      restaurantCoords.lng
+    );
+
+    return formatDistance(distanceKm);
+  };
+
+  useEffect(() => {
+    if (autoRequest && !state.hasRequested) {
+      const timer = setTimeout(() => {
+        requestLocation();
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [autoRequest, state.hasRequested]);
+
+  const contextValue: GeolocationContextType = {
+    ...state,
+    requestLocation,
+    calculateRestaurantDistance,
+  };
 
   return (
-    <GeolocationContext.Provider
-      value={{ location, error, isLoading, requestLocation }}
-    >
+    <GeolocationContext.Provider value={contextValue}>
       {children}
     </GeolocationContext.Provider>
   );
-}
+};
 
-export const useGeolocation = () => {
+export const useGeolocationContext = () => {
   const context = useContext(GeolocationContext);
   if (context === undefined) {
-    throw new Error('useGeolocation must be used within a GeolocationProvider');
+    throw new Error(
+      'useGeolocationContext must be used within a GeolocationProvider'
+    );
   }
   return context;
 };
