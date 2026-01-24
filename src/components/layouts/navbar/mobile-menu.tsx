@@ -2,7 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/use-auth';
-import { ROUTES } from '@/constants';
+import {
+  ROUTES,
+  AUTHENTICATED_MENU_ITEMS,
+  GUEST_MENU_ITEMS,
+  type NavMenuItem,
+} from '@/constants';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,21 +25,64 @@ interface MobileMenuProps {
   isScrolled?: boolean;
 }
 
+const IconMap: Record<string, React.FC> = {
+  Home: MenuIcons.Home,
+  Restaurant: MenuIcons.Restaurant,
+  Cart: MenuIcons.Cart,
+  Orders: MenuIcons.Orders,
+  SignIn: MenuIcons.SignIn,
+  SignUp: MenuIcons.SignUp,
+  Logout: MenuIcons.Logout,
+};
+
 function MobileMenu({ isScrolled = false }: MobileMenuProps) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const router = useRouter();
 
-  const handleSignIn = () => {
-    router.push(ROUTES.AUTH_LOGIN);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push(ROUTES.HOME);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
-  const handleSignUp = () => {
-    router.push(ROUTES.AUTH_REGISTER);
+  const renderMenuItem = (item: NavMenuItem, index: number) => {
+    if (item.type === 'separator') {
+      return <DropdownMenuSeparator key={`sep-${index}`} />;
+    }
+
+    const Icon = item.icon ? IconMap[item.icon] : null;
+
+    if (item.type === 'logout') {
+      return (
+        <DropdownMenuItem
+          key={item.label}
+          onClick={handleLogout}
+          className='text-destructive focus:text-destructive cursor-pointer'
+        >
+          {Icon && <Icon />}
+          {item.label}
+        </DropdownMenuItem>
+      );
+    }
+
+    return (
+      <DropdownMenuItem
+        key={item.label}
+        onClick={() => item.href && router.push(item.href)}
+        className='cursor-pointer'
+      >
+        {Icon && <Icon />}
+        {item.label}
+      </DropdownMenuItem>
+    );
   };
 
-  const handleLogout = () => {
-    router.push(ROUTES.HOME);
-  };
+  const menuItems = isAuthenticated
+    ? AUTHENTICATED_MENU_ITEMS
+    : GUEST_MENU_ITEMS;
 
   return (
     <div className='md:hidden'>
@@ -75,7 +123,7 @@ function MobileMenu({ isScrolled = false }: MobileMenuProps) {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent className='mr-4 w-56' align='end' sideOffset={5}>
-          {isAuthenticated ? (
+          {isAuthenticated && (
             <>
               <DropdownMenuLabel className='font-normal'>
                 <div className='flex items-center space-x-3'>
@@ -91,95 +139,19 @@ function MobileMenu({ isScrolled = false }: MobileMenuProps) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  onClick={() => router.push(ROUTES.HOME)}
-                  className='cursor-pointer'
-                >
-                  <MenuIcons.Home />
-                  Home
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  onClick={() => router.push(ROUTES.RESTAURANTS)}
-                  className='cursor-pointer'
-                >
-                  <MenuIcons.Restaurant />
-                  Restaurants
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  onClick={() => router.push(ROUTES.CART)}
-                  className='cursor-pointer'
-                >
-                  <MenuIcons.Cart />
-                  Cart
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  onClick={() => router.push(ROUTES.ORDERS)}
-                  className='cursor-pointer'
-                >
-                  <MenuIcons.Orders />
-                  Orders
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-
-              <DropdownMenuSeparator />
-
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className='text-destructive focus:text-destructive cursor-pointer'
-              >
-                <MenuIcons.Logout />
-                Sign Out
-              </DropdownMenuItem>
             </>
-          ) : (
+          )}
+
+          {!isAuthenticated && (
             <>
               <DropdownMenuLabel>Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  onClick={handleSignIn}
-                  className='cursor-pointer'
-                >
-                  <MenuIcons.SignIn />
-                  Sign In
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  onClick={handleSignUp}
-                  className='cursor-pointer'
-                >
-                  <MenuIcons.SignUp />
-                  Sign Up
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-
-              <DropdownMenuSeparator />
-
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  onClick={() => router.push(ROUTES.HOME)}
-                  className='cursor-pointer'
-                >
-                  <MenuIcons.Home />
-                  Home
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  onClick={() => router.push(ROUTES.RESTAURANTS)}
-                  className='cursor-pointer'
-                >
-                  <MenuIcons.Restaurant />
-                  Restaurants
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
             </>
           )}
+
+          <DropdownMenuGroup>
+            {menuItems.map((item, index) => renderMenuItem(item, index))}
+          </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

@@ -39,7 +39,7 @@ function Navbar() {
   return (
     <nav
       className={cn(
-        'fixed top-0 right-0 left-0 z-50 h-16 md:h-20 px-4 py-3 transition-all duration-100 ease-in-out md:px-30 md:py-4',
+        'fixed top-0 right-0 left-0 z-50 h-16 px-4 py-3 transition-all duration-100 ease-in-out md:h-20 md:px-30 md:py-4',
         isScrolled ? 'bg-white shadow-sm backdrop-blur-md' : 'bg-transparent'
       )}
     >
@@ -79,7 +79,7 @@ function Navbar() {
               <button
                 onClick={handleSignIn}
                 className={cn(
-                  buttonVariants({ variant: 'navbar-signin', size: 'none' }),
+                  buttonVariants({ variant: 'secondary', size: 'none' }),
                   'transition-all duration-200 hover:scale-105 active:scale-95',
                   getSignInButtonStyles(isScrolled)
                 )}
@@ -90,7 +90,7 @@ function Navbar() {
               <button
                 onClick={handleSignUp}
                 className={cn(
-                  buttonVariants({ variant: 'navbar-signup', size: 'none' }),
+                  buttonVariants({ variant: 'default', size: 'none' }),
                   'transition-all duration-200 hover:scale-105 active:scale-95',
                   getSignUpButtonStyles(isScrolled)
                 )}

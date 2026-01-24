@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import Image from 'next/image';
-import Searchbar from '@/components/views/home/searchbar';
+import Searchbar from '@/views/home/searchbar';
 
 interface HeroProps {
   onSearch?: (query: string) => void;
@@ -21,7 +21,7 @@ function Hero({ onSearch, onClearSearch }: HeroProps) {
         className='object-cover object-center'
         sizes='100vw'
       />
-      <div className='absolute inset-0 bg-black/40'></div>
+      <div className='absolute inset-0 bg-linear-to-b from-black/20 via-black/40 to-black/60'></div>
       <div className='relative z-10 mx-auto max-w-4xl space-y-10 px-6 text-center text-white'>
         <div>
           <motion.h1

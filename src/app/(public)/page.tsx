@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import Hero from '@/components/views/home/hero';
-import HomeMenu from '@/components/views/home/home-menu';
-import Recommended from '@/components/views/home/recommended';
-import SearchResult from '@/components/views/home/search-result';
+import Hero from '@/views/home/hero';
+import HomeMenu from '@/views/home/home-menu';
+import Recommended from '@/views/home/recommended';
+import SearchResult from '@/views/home/search-result';
 import { useSearchState } from '@/hooks/use-search';
 import { GeolocationProvider } from '@/components/providers/geolocation-provider';
 

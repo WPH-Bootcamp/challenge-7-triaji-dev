@@ -10,22 +10,16 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
+          'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 rounded-full px-10 py-2 text-md font-bold min-w-41',
         destructive:
           'bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:
-          'border text-md font-bold hover:font-extrabold border-neutral-300 shadow-lg bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 rounded-full',
+          'border text-md font-bold border-neutral-300 bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 rounded-full',
         secondary:
-          'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
+          'bg-transparent ring-2 ring-inset hover:ring-primary ring-border text-secondary-foreground rounded-full px-10 py-2 text-md font-bold min-w-41 hover:bg-secondary/80',
         ghost:
           'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
-        'navbar-signin':
-          'rounded-full px-10 py-2 text-md font-bold transition-all duration-200 bg-transparent border min-w-41',
-        'navbar-signup':
-          'rounded-full px-10 py-2 text-md font-bold shadow-md transition-all duration-200 min-w-41',
-        'navbar-logout':
-          'rounded-md px-3 py-2 text-md font-bold transition-all duration-200 hover:bg-destructive/10 min-w-41',
       },
       size: {
         default: 'h-9 px-4 py-4 has-[>svg]:px-3',

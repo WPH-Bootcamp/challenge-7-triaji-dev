@@ -55,7 +55,7 @@ function HomeMenu() {
   };
 
   return (
-    <div className='mx-30 mt-6 mb-16 grid grid-cols-3 gap-5 px-5 sm:mt-12 sm:gap-12 lg:grid-cols-6'>
+    <div className='mx-5 md:mx-30 mt-6 mb-16 grid grid-cols-3 gap-5 sm:mt-12 sm:gap-12 lg:grid-cols-6'>
       {homeMenuData.map((item) => (
         <motion.div
           key={item.title}

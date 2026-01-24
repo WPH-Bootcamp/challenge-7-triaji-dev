@@ -2,7 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/use-auth';
-import { ROUTES } from '@/constants';
+import {
+  ROUTES,
+  AUTHENTICATED_MENU_ITEMS,
+  type NavMenuItem,
+} from '@/constants';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +23,14 @@ import { cn } from '@/lib/utils';
 interface DesktopMenuProps {
   isScrolled?: boolean;
 }
+
+const IconMap: Record<string, React.FC> = {
+  Home: MenuIcons.Home,
+  Restaurant: MenuIcons.Restaurant,
+  Cart: MenuIcons.Cart,
+  Orders: MenuIcons.Orders,
+  Logout: MenuIcons.Logout,
+};
 
 function DesktopMenu({ isScrolled = false }: DesktopMenuProps) {
   const { isAuthenticated, user, logout } = useAuth();
@@ -37,6 +49,38 @@ function DesktopMenu({ isScrolled = false }: DesktopMenuProps) {
     }
   };
 
+  const renderMenuItem = (item: NavMenuItem, index: number) => {
+    if (item.type === 'separator') {
+      return <DropdownMenuSeparator key={`sep-${index}`} />;
+    }
+
+    const Icon = item.icon ? IconMap[item.icon] : null;
+
+    if (item.type === 'logout') {
+      return (
+        <DropdownMenuItem
+          key={item.label}
+          onClick={handleLogout}
+          className='text-destructive focus:text-destructive cursor-pointer'
+        >
+          {Icon && <Icon />}
+          {item.label}
+        </DropdownMenuItem>
+      );
+    }
+
+    return (
+      <DropdownMenuItem
+        key={item.label}
+        onClick={() => item.href && router.push(item.href)}
+        className='cursor-pointer'
+      >
+        {Icon && <Icon />}
+        {item.label}
+      </DropdownMenuItem>
+    );
+  };
+
   return (
     <div className='hidden md:block'>
       <DropdownMenu>
@@ -47,7 +91,6 @@ function DesktopMenu({ isScrolled = false }: DesktopMenuProps) {
               isScrolled ? 'text-foreground' : 'text-white'
             )}
           >
-            {/* Avatar and Username */}
             <div className='flex cursor-pointer items-center justify-center transition-transform hover:scale-110'>
               <AvatarWithInitials
                 src={user?.avatarUrl}
@@ -81,48 +124,10 @@ function DesktopMenu({ isScrolled = false }: DesktopMenuProps) {
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem
-              onClick={() => router.push(ROUTES.HOME)}
-              className='cursor-pointer'
-            >
-              <MenuIcons.Home />
-              Home
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              onClick={() => router.push(ROUTES.RESTAURANTS)}
-              className='cursor-pointer'
-            >
-              <MenuIcons.Restaurant />
-              Restaurants
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              onClick={() => router.push(ROUTES.CART)}
-              className='cursor-pointer'
-            >
-              <MenuIcons.Cart />
-              Cart
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              onClick={() => router.push(ROUTES.ORDERS)}
-              className='cursor-pointer'
-            >
-              <MenuIcons.Orders />
-              Orders
-            </DropdownMenuItem>
+            {AUTHENTICATED_MENU_ITEMS.map((item, index) =>
+              renderMenuItem(item, index)
+            )}
           </DropdownMenuGroup>
-
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem
-            onClick={handleLogout}
-            className='text-destructive focus:text-destructive cursor-pointer'
-          >
-            <MenuIcons.Logout />
-            Sign Out
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
