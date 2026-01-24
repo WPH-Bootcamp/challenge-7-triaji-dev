@@ -1,158 +1,39 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useLogin, useRegister } from '@/features/auth/auth.queries';
-import { useAuth } from '@/features/auth/use-auth';
+import { useSignInForm, useSignUpForm, useAuth } from '@/features/auth';
 import { ROUTES } from '@/constants';
 import { cn } from '@/lib/utils';
-
-interface FormErrors {
-  [key: string]: string;
-}
 
 function AuthPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated } = useAuth();
 
-  const loginMutation = useLogin();
-  const registerMutation = useRegister();
-
   const tabFromUrl = searchParams.get('tab');
-  const initialTab = tabFromUrl === 'signup' ? 'signup' : 'signin';
-  const [activeTab, setActiveTab] = useState(initialTab);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const activeTab = tabFromUrl === 'signup' ? 'signup' : 'signin';
 
-  // Form states
-  const [signInData, setSignInData] = useState({
-    email: '',
-    password: '',
-    rememberMe: false,
+  const signIn = useSignInForm();
+  const signUp = useSignUpForm({
+    onSuccess: () => {
+      router.push(`${ROUTES.AUTH}?tab=signin`);
+    },
   });
 
-  const [signUpData, setSignUpData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-  });
-
-  const [signInErrors, setSignInErrors] = useState<FormErrors>({});
-  const [signUpErrors, setSignUpErrors] = useState<FormErrors>({});
-
-  // Redirect if authenticated
   useEffect(() => {
     if (isAuthenticated) {
       router.push(ROUTES.HOME);
     }
   }, [isAuthenticated, router]);
 
-  // Sync tab with URL
-  useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (tab === 'signup' || tab === 'signin') {
-      setActiveTab(tab);
-    }
-  }, [searchParams]);
-
-  // Validation
-  const validateEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validatePassword = (password: string) => password.length >= 6;
-  const validatePhone = (phone: string) =>
-    /^[0-9+\-\s()]+$/.test(phone) && phone.length >= 10;
-
-  const validateSignIn = () => {
-    const errors: FormErrors = {};
-    if (!signInData.email) errors.email = 'Email is required';
-    else if (!validateEmail(signInData.email))
-      errors.email = 'Please enter a valid email';
-    if (!signInData.password) errors.password = 'Password is required';
-    else if (!validatePassword(signInData.password))
-      errors.password = 'Password must be at least 6 characters';
-    setSignInErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const validateSignUp = () => {
-    const errors: FormErrors = {};
-    if (!signUpData.name) errors.name = 'Name is required';
-    if (!signUpData.email) errors.email = 'Email is required';
-    else if (!validateEmail(signUpData.email))
-      errors.email = 'Please enter a valid email';
-    if (!signUpData.phone) errors.phone = 'Phone number is required';
-    else if (!validatePhone(signUpData.phone))
-      errors.phone = 'Please enter a valid phone number';
-    if (!signUpData.password) errors.password = 'Password is required';
-    else if (!validatePassword(signUpData.password))
-      errors.password = 'Password must be at least 6 characters';
-    if (!signUpData.confirmPassword)
-      errors.confirmPassword = 'Please confirm your password';
-    else if (signUpData.password !== signUpData.confirmPassword)
-      errors.confirmPassword = 'Passwords do not match';
-    setSignUpErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  // Handlers
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateSignIn()) return;
-
-    try {
-      const result = await loginMutation.mutateAsync({
-        email: signInData.email,
-        password: signInData.password,
-      });
-      // Token is stored in localStorage by useLogin mutation
-      router.push(ROUTES.HOME);
-    } catch (error) {
-      console.error('Login failed:', error);
-    }
-  };
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateSignUp()) return;
-
-    try {
-      await registerMutation.mutateAsync({
-        name: signUpData.name,
-        email: signUpData.email,
-        phone: signUpData.phone,
-        password: signUpData.password,
-      });
-      setActiveTab('signin');
-      setSignUpData({
-        name: '',
-        email: '',
-        phone: '',
-        password: '',
-        confirmPassword: '',
-      });
-    } catch (error) {
-      console.error('Registration failed:', error);
-    }
-  };
-
-  const updateSignIn = (field: string, value: string | boolean) => {
-    setSignInData((prev) => ({ ...prev, [field]: value }));
-    if (signInErrors[field])
-      setSignInErrors((prev) => ({ ...prev, [field]: '' }));
-  };
-
-  const updateSignUp = (field: string, value: string) => {
-    setSignUpData((prev) => ({ ...prev, [field]: value }));
-    if (signUpErrors[field])
-      setSignUpErrors((prev) => ({ ...prev, [field]: '' }));
+  const handleTabChange = (value: string) => {
+    router.push(`${ROUTES.AUTH}?tab=${value}`);
   };
 
   return (
@@ -201,7 +82,7 @@ function AuthPage() {
           </div>
 
           {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <Tabs value={activeTab} onValueChange={handleTabChange}>
             <TabsList className='grid h-full grid-cols-2 rounded-xl bg-neutral-200 p-1'>
               <TabsTrigger value='signin'>Sign in</TabsTrigger>
               <TabsTrigger value='signup'>Sign up</TabsTrigger>
@@ -209,46 +90,56 @@ function AuthPage() {
 
             {/* Sign In */}
             <TabsContent value='signin'>
-              <form onSubmit={handleSignIn} className='space-y-4'>
+              <form onSubmit={signIn.handleSubmit} className='space-y-4'>
                 <div className='space-y-2'>
                   <Input
                     type='email'
                     placeholder='Email'
-                    value={signInData.email}
-                    onChange={(e) => updateSignIn('email', e.target.value)}
+                    value={signIn.data.email}
+                    onChange={(e) =>
+                      signIn.updateField('email', e.target.value)
+                    }
                     className={cn(
                       'h-12',
-                      signInErrors.email && 'border-red-500'
+                      signIn.errors.email && 'border-red-500'
                     )}
                   />
-                  {signInErrors.email && (
-                    <p className='text-xs text-red-500'>{signInErrors.email}</p>
+                  {signIn.errors.email && (
+                    <p className='text-xs text-red-500'>
+                      {signIn.errors.email}
+                    </p>
                   )}
                 </div>
 
                 <div className='space-y-2'>
                   <div className='relative'>
                     <Input
-                      type={showPassword ? 'text' : 'password'}
+                      type={signIn.showPassword ? 'text' : 'password'}
                       placeholder='Password'
-                      value={signInData.password}
-                      onChange={(e) => updateSignIn('password', e.target.value)}
+                      value={signIn.data.password}
+                      onChange={(e) =>
+                        signIn.updateField('password', e.target.value)
+                      }
                       className={cn(
                         'h-12 pr-10',
-                        signInErrors.password && 'border-red-500'
+                        signIn.errors.password && 'border-red-500'
                       )}
                     />
                     <button
                       type='button'
-                      onClick={() => setShowPassword(!showPassword)}
+                      onClick={signIn.togglePasswordVisibility}
                       className='absolute top-1/2 right-3 -translate-y-1/2 text-neutral-500 hover:text-neutral-700'
                     >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      {signIn.showPassword ? (
+                        <EyeOff size={20} />
+                      ) : (
+                        <Eye size={20} />
+                      )}
                     </button>
                   </div>
-                  {signInErrors.password && (
+                  {signIn.errors.password && (
                     <p className='text-xs text-red-500'>
-                      {signInErrors.password}
+                      {signIn.errors.password}
                     </p>
                   )}
                 </div>
@@ -257,9 +148,9 @@ function AuthPage() {
                   <input
                     type='checkbox'
                     id='rememberMe'
-                    checked={signInData.rememberMe}
+                    checked={signIn.data.rememberMe}
                     onChange={(e) =>
-                      updateSignIn('rememberMe', e.target.checked)
+                      signIn.updateField('rememberMe', e.target.checked)
                     }
                     className='text-primary focus:ring-primary h-4 w-4 rounded border-neutral-300'
                   />
@@ -271,7 +162,7 @@ function AuthPage() {
                   </label>
                 </div>
 
-                {loginMutation.error && (
+                {signIn.error && (
                   <div className='rounded-lg border border-red-200 bg-red-50 p-3'>
                     <p className='text-sm text-red-600'>
                       Invalid email or password
@@ -281,30 +172,30 @@ function AuthPage() {
 
                 <Button
                   type='submit'
-                  disabled={loginMutation.isPending}
+                  disabled={signIn.isPending}
                   className='h-12 w-full'
                 >
-                  {loginMutation.isPending ? 'Signing in...' : 'Login'}
+                  {signIn.isPending ? 'Signing in...' : 'Login'}
                 </Button>
               </form>
             </TabsContent>
 
             {/* Sign Up */}
             <TabsContent value='signup'>
-              <form onSubmit={handleSignUp} className='space-y-4'>
+              <form onSubmit={signUp.handleSubmit} className='space-y-4'>
                 <div className='space-y-2'>
                   <Input
                     type='text'
                     placeholder='Name'
-                    value={signUpData.name}
-                    onChange={(e) => updateSignUp('name', e.target.value)}
+                    value={signUp.data.name}
+                    onChange={(e) => signUp.updateField('name', e.target.value)}
                     className={cn(
                       'h-12',
-                      signUpErrors.name && 'border-red-500'
+                      signUp.errors.name && 'border-red-500'
                     )}
                   />
-                  {signUpErrors.name && (
-                    <p className='text-xs text-red-500'>{signUpErrors.name}</p>
+                  {signUp.errors.name && (
+                    <p className='text-xs text-red-500'>{signUp.errors.name}</p>
                   )}
                 </div>
 
@@ -312,15 +203,19 @@ function AuthPage() {
                   <Input
                     type='email'
                     placeholder='Email'
-                    value={signUpData.email}
-                    onChange={(e) => updateSignUp('email', e.target.value)}
+                    value={signUp.data.email}
+                    onChange={(e) =>
+                      signUp.updateField('email', e.target.value)
+                    }
                     className={cn(
                       'h-12',
-                      signUpErrors.email && 'border-red-500'
+                      signUp.errors.email && 'border-red-500'
                     )}
                   />
-                  {signUpErrors.email && (
-                    <p className='text-xs text-red-500'>{signUpErrors.email}</p>
+                  {signUp.errors.email && (
+                    <p className='text-xs text-red-500'>
+                      {signUp.errors.email}
+                    </p>
                   )}
                 </div>
 
@@ -328,41 +223,18 @@ function AuthPage() {
                   <Input
                     type='tel'
                     placeholder='Phone Number'
-                    value={signUpData.phone}
-                    onChange={(e) => updateSignUp('phone', e.target.value)}
+                    value={signUp.data.phone}
+                    onChange={(e) =>
+                      signUp.updateField('phone', e.target.value)
+                    }
                     className={cn(
                       'h-12',
-                      signUpErrors.phone && 'border-red-500'
+                      signUp.errors.phone && 'border-red-500'
                     )}
                   />
-                  {signUpErrors.phone && (
-                    <p className='text-xs text-red-500'>{signUpErrors.phone}</p>
-                  )}
-                </div>
-
-                <div className='space-y-2'>
-                  <div className='relative'>
-                    <Input
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder='Password'
-                      value={signUpData.password}
-                      onChange={(e) => updateSignUp('password', e.target.value)}
-                      className={cn(
-                        'h-12 pr-10',
-                        signUpErrors.password && 'border-red-500'
-                      )}
-                    />
-                    <button
-                      type='button'
-                      onClick={() => setShowPassword(!showPassword)}
-                      className='absolute top-1/2 right-3 -translate-y-1/2 text-neutral-500 hover:text-neutral-700'
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                  {signUpErrors.password && (
+                  {signUp.errors.phone && (
                     <p className='text-xs text-red-500'>
-                      {signUpErrors.password}
+                      {signUp.errors.phone}
                     </p>
                   )}
                 </div>
@@ -370,39 +242,70 @@ function AuthPage() {
                 <div className='space-y-2'>
                   <div className='relative'>
                     <Input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder='Confirm Password'
-                      value={signUpData.confirmPassword}
+                      type={signUp.showPassword ? 'text' : 'password'}
+                      placeholder='Password'
+                      value={signUp.data.password}
                       onChange={(e) =>
-                        updateSignUp('confirmPassword', e.target.value)
+                        signUp.updateField('password', e.target.value)
                       }
                       className={cn(
                         'h-12 pr-10',
-                        signUpErrors.confirmPassword && 'border-red-500'
+                        signUp.errors.password && 'border-red-500'
                       )}
                     />
                     <button
                       type='button'
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
+                      onClick={signUp.togglePasswordVisibility}
                       className='absolute top-1/2 right-3 -translate-y-1/2 text-neutral-500 hover:text-neutral-700'
                     >
-                      {showConfirmPassword ? (
+                      {signUp.showPassword ? (
                         <EyeOff size={20} />
                       ) : (
                         <Eye size={20} />
                       )}
                     </button>
                   </div>
-                  {signUpErrors.confirmPassword && (
+                  {signUp.errors.password && (
                     <p className='text-xs text-red-500'>
-                      {signUpErrors.confirmPassword}
+                      {signUp.errors.password}
                     </p>
                   )}
                 </div>
 
-                {registerMutation.error && (
+                <div className='space-y-2'>
+                  <div className='relative'>
+                    <Input
+                      type={signUp.showConfirmPassword ? 'text' : 'password'}
+                      placeholder='Confirm Password'
+                      value={signUp.data.confirmPassword}
+                      onChange={(e) =>
+                        signUp.updateField('confirmPassword', e.target.value)
+                      }
+                      className={cn(
+                        'h-12 pr-10',
+                        signUp.errors.confirmPassword && 'border-red-500'
+                      )}
+                    />
+                    <button
+                      type='button'
+                      onClick={signUp.toggleConfirmPasswordVisibility}
+                      className='absolute top-1/2 right-3 -translate-y-1/2 text-neutral-500 hover:text-neutral-700'
+                    >
+                      {signUp.showConfirmPassword ? (
+                        <EyeOff size={20} />
+                      ) : (
+                        <Eye size={20} />
+                      )}
+                    </button>
+                  </div>
+                  {signUp.errors.confirmPassword && (
+                    <p className='text-xs text-red-500'>
+                      {signUp.errors.confirmPassword}
+                    </p>
+                  )}
+                </div>
+
+                {signUp.error && (
                   <div className='rounded-lg border border-red-200 bg-red-50 p-3'>
                     <p className='text-sm text-red-600'>
                       Registration failed. Please try again.
@@ -412,12 +315,10 @@ function AuthPage() {
 
                 <Button
                   type='submit'
-                  disabled={registerMutation.isPending}
+                  disabled={signUp.isPending}
                   className='h-12 w-full'
                 >
-                  {registerMutation.isPending
-                    ? 'Creating account...'
-                    : 'Register'}
+                  {signUp.isPending ? 'Creating account...' : 'Register'}
                 </Button>
               </form>
             </TabsContent>

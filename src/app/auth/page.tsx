@@ -1,5 +1,5 @@
 import AuthPage from '@/views/auth/auth-page';
 
-export default function LoginPage() {
+export default function AuthenticationPage() {
   return <AuthPage />;
 }

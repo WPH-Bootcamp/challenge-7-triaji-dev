@@ -29,11 +29,11 @@ function Navbar() {
   }, []);
 
   const handleSignIn = () => {
-    router.push(ROUTES.AUTH_LOGIN);
+    router.push(ROUTES.AUTH);
   };
 
   const handleSignUp = () => {
-    router.push(ROUTES.AUTH_REGISTER);
+    router.push(`${ROUTES.AUTH}?tab=signup`);
   };
 
   return (

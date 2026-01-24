@@ -1,7 +1,6 @@
-// Auth feature exports
-export { default as LoginForm } from './LoginForm';
-export { default as RegisterForm } from './RegisterForm';
 export { useAuth } from './use-auth';
+export { useSignInForm } from './useSignInForm';
+export { useSignUpForm } from './useSignUpForm';
 export {
   useLogin,
   useRegister,

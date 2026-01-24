@@ -25,11 +25,11 @@ export const AUTHENTICATED_MENU_ITEMS: NavMenuItem[] = [
 ];
 
 export const GUEST_MENU_ITEMS: NavMenuItem[] = [
-  { type: 'item', label: 'Sign In', href: ROUTES.AUTH_LOGIN, icon: 'SignIn' },
+  { type: 'item', label: 'Sign In', href: ROUTES.AUTH, icon: 'SignIn' },
   {
     type: 'item',
     label: 'Sign Up',
-    href: ROUTES.AUTH_REGISTER,
+    href: `${ROUTES.AUTH}?tab=signup`,
     icon: 'SignUp',
   },
   { type: 'separator' },

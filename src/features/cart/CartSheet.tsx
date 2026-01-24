@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import { useCart } from './useCart';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/use-auth';
+import { ROUTES } from '@/constants';
 
 // Format price in IDR
 function formatPrice(price: number): string {
@@ -46,7 +47,7 @@ export default function CartSheet() {
 
   const handleLogin = () => {
     closeSheet();
-    router.push('/login');
+    router.push(ROUTES.AUTH);
   };
 
   return (
