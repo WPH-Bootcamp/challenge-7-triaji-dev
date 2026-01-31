@@ -3,11 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/use-auth';
 import { ROUTES } from '@/constants/routes';
-import {
-  AUTHENTICATED_MENU_ITEMS,
-  GUEST_MENU_ITEMS,
-  type NavMenuItem,
-} from '@/constants/navbar';
+import { GUEST_MENU_ITEMS, type NavMenuItem } from '@/constants/navbar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +16,7 @@ import {
 import { MenuIcons } from './menu-icons';
 import { AvatarWithInitials } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import UserDropdownContent from './user-dropdown-content';
 
 interface MobileMenuProps {
   isScrolled?: boolean;
@@ -37,37 +34,15 @@ const IconMap: Record<string, React.FC> = {
 };
 
 function MobileMenu({ isScrolled = false }: MobileMenuProps) {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const router = useRouter();
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.push(ROUTES.HOME);
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
-
-  const renderMenuItem = (item: NavMenuItem, index: number) => {
+  const renderGuestMenuItem = (item: NavMenuItem, index: number) => {
     if (item.type === 'separator') {
       return <DropdownMenuSeparator key={`sep-${index}`} />;
     }
 
     const Icon = item.icon ? IconMap[item.icon] : null;
-
-    if (item.type === 'logout') {
-      return (
-        <DropdownMenuItem
-          key={item.label}
-          onClick={handleLogout}
-          className='text-destructive focus:text-destructive cursor-pointer'
-        >
-          {Icon && <Icon />}
-          {item.label}
-        </DropdownMenuItem>
-      );
-    }
 
     return (
       <DropdownMenuItem
@@ -81,17 +56,13 @@ function MobileMenu({ isScrolled = false }: MobileMenuProps) {
     );
   };
 
-  const menuItems = isAuthenticated
-    ? AUTHENTICATED_MENU_ITEMS
-    : GUEST_MENU_ITEMS;
-
   return (
     <div className='md:hidden'>
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <button
             className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-md transition-transform hover:scale-105 focus:ring-0 focus:outline-none active:scale-95',
+              'flex h-10 w-10 items-center justify-center rounded-md transition-transform hover:scale-105 focus:ring-0 focus:outline-none active:scale-95 cursor-pointer',
               isScrolled ? 'text-foreground' : 'text-white'
             )}
           >
@@ -125,42 +96,24 @@ function MobileMenu({ isScrolled = false }: MobileMenuProps) {
           </button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className='mr-4 w-56' align='end' sideOffset={5}>
-          {isAuthenticated && (
-            <>
-              <DropdownMenuLabel className='font-normal'>
-                <div className='flex items-center space-x-3'>
-                  <AvatarWithInitials
-                    src={user?.avatar}
-                    alt={user?.name || 'Profile'}
-                    name={user?.name}
-                    size='sm'
-                    className='mr-2'
-                  />
-                  <div className='flex flex-col space-y-1'>
-                    <p className='text-sm-custom leading-none font-medium'>
-                      {user?.name || 'User'}
-                    </p>
-                    <p className='text-muted-foreground text-xs-custom leading-none'>
-                      {user?.email || 'user@example.com'}
-                    </p>
-                  </div>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-            </>
-          )}
-
-          {!isAuthenticated && (
+        <DropdownMenuContent
+          className='mr-4 w-[197px]'
+          align='end'
+          sideOffset={5}
+        >
+          {isAuthenticated ? (
+            <UserDropdownContent />
+          ) : (
             <>
               <DropdownMenuLabel>Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                {GUEST_MENU_ITEMS.map((item, index) =>
+                  renderGuestMenuItem(item, index)
+                )}
+              </DropdownMenuGroup>
             </>
           )}
-
-          <DropdownMenuGroup>
-            {menuItems.map((item, index) => renderMenuItem(item, index))}
-          </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

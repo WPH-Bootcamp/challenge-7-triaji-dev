@@ -98,8 +98,8 @@ export function SignInForm() {
       )}
 
       {/* Submit Button */}
-      <Button type='submit' disabled={isPending} className='h-12 w-full'>
-        {isPending ? 'Signing in...' : 'Login'}
+      <Button type='submit' disabled={isPending} className='h-12 w-full text-white'>
+        {isPending ? 'Logging in...' : 'Login'}
       </Button>
     </form>
   );

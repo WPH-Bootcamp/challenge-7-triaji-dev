@@ -40,8 +40,14 @@ export const MenuIcons = {
   ),
 
   Orders: () => (
-    <div className='mr-2 flex h-5 w-5 items-center justify-center rounded-full'>
-      <ClipboardList className='h-4 w-4' />
+    <div className='mr-2 flex h-5 w-5 items-center justify-center'>
+      <Image
+        src='/icons/my-orders.svg'
+        alt='My Orders'
+        width={20}
+        height={20}
+        className='h-5 w-5'
+      />
     </div>
   ),
 
@@ -58,14 +64,26 @@ export const MenuIcons = {
   ),
 
   Logout: () => (
-    <div className='mr-2 flex h-5 w-5 items-center justify-center rounded-full'>
-      <LogOut className='h-4 w-4' />
+    <div className='mr-2 flex h-5 w-5 items-center justify-center'>
+      <Image
+        src='/icons/logout.svg'
+        alt='Logout'
+        width={20}
+        height={20}
+        className='h-5 w-5'
+      />
     </div>
   ),
 
   DeliveryAddress: () => (
-    <div className='mr-2 flex h-5 w-5 items-center justify-center rounded-full'>
-      <MapPin className='h-4 w-4' />
+    <div className='mr-2 flex h-5 w-5 items-center justify-center'>
+      <Image
+        src='/icons/delivery-address.svg'
+        alt='Delivery Address'
+        width={20}
+        height={20}
+        className='h-5 w-5'
+      />
     </div>
   ),
 
