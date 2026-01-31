@@ -178,12 +178,9 @@ export function useSignUpForm(options?: UseSignUpFormOptions) {
       const newData = { ...data, [field]: value };
       setData(newData);
 
-      // Real-time validation only if field was touched
       if (touched[field]) {
         const error = validateField(field, value, newData);
         setErrors((prev) => ({ ...prev, [field]: error }));
-
-        // Also re-validate confirmPassword when password changes
         if (field === 'password' && touched.confirmPassword) {
           const confirmError = validateConfirmPassword(
             value,
@@ -201,7 +198,6 @@ export function useSignUpForm(options?: UseSignUpFormOptions) {
     (field: keyof SignUpData) => {
       setTouched((prev) => ({ ...prev, [field]: true }));
       const value = data[field];
-      // Type assertion needed because data[field] could be string (from interface) but compiler might verify stricter keys
       const error = validateField(field, value as string);
       setErrors((prev) => ({ ...prev, [field]: error }));
     },

@@ -34,10 +34,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    /**
-     * Set credentials after login
-     * Persists token and user to cookies (expires in 7 days)
-     */
+    //Set credentials after login
     setCredentials: (
       state,
       action: PayloadAction<{ user: User; token: string }>
@@ -53,9 +50,7 @@ const authSlice = createSlice({
       }
     },
 
-    /**
-     * Set user data (without changing token)
-     */
+    // Set user data (without changing token)
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
       state.isAuthenticated = true;
@@ -65,9 +60,7 @@ const authSlice = createSlice({
       }
     },
 
-    /**
-     * Set token only
-     */
+    // Set token only
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
       state.isAuthenticated = true;
@@ -77,9 +70,7 @@ const authSlice = createSlice({
       }
     },
 
-    /**
-     * Logout - clear all auth state and cookies
-     */
+    // Logout - clear all auth state and cookies
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -91,9 +82,7 @@ const authSlice = createSlice({
       }
     },
 
-    /**
-     * Update user partially
-     */
+    // Update user partially
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
@@ -104,9 +93,7 @@ const authSlice = createSlice({
       }
     },
 
-    /**
-     * Restore auth state from cookies (useful on app mount)
-     */
+    // Restore auth state from cookies (useful on app mount)
     restoreAuth: (state) => {
       if (typeof window !== 'undefined') {
         const token = Cookies.get('token');

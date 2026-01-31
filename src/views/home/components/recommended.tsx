@@ -35,9 +35,6 @@ function Recommended() {
     : isLoadingBestSellers;
   const error = !showBestSellers ? errorRecommended : errorBestSellers;
 
-  // Data is now properly typed:
-  // - recommendedData: { recommendations: Restaurant[] }
-  // - bestSellersData: { restaurants: Restaurant[], pagination: Pagination }
   const restaurants: Restaurant[] = !showBestSellers
     ? (recommendedData?.recommendations ?? [])
     : (bestSellersData?.restaurants ?? []);

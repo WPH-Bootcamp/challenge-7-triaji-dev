@@ -21,9 +21,7 @@ function Navbar() {
   const pathname = usePathname();
   const isHomePage = pathname === ROUTES.HOME;
 
-  // Navbar is transparent only on homepage AND when not scrolled
   const isTransparent = isHomePage && !isScrolled;
-  // Elements use "scrolled" styles if either the page IS scrolled OR we're not on the homepage
   const useScrolledStyles = isScrolled || !isHomePage;
 
   useEffect(() => {

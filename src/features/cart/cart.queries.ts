@@ -1,10 +1,9 @@
+'use client';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import apiClient from '@/services/api-client';
-import type {
-  CartGrouped,
-  AddToCartRequest,
-  UpdateCartItemRequest,
-} from '@/types/api';
+import Cookies from 'js-cookie';
+import { cartService, type CartResponse } from '@/services/cart';
+import type { AddToCartRequest, UpdateCartItemRequest } from '@/types/api';
 
 // Query keys
 export const cartKeys = {
@@ -16,15 +15,13 @@ export const cartKeys = {
 export function useServerCart(enabled: boolean = true) {
   return useQuery({
     queryKey: cartKeys.list(),
-    queryFn: async (): Promise<CartGrouped[]> => {
-      const response = await apiClient.get<CartGrouped[]>('/api/cart');
-      return response.data;
+    queryFn: async () => {
+      const response = await cartService.getCart();
+      return response.data; 
     },
-    enabled:
-      enabled &&
-      typeof window !== 'undefined' &&
-      !!localStorage.getItem('token'),
-    staleTime: 30 * 1000, // 30 seconds
+    enabled: enabled && typeof window !== 'undefined' && !!Cookies.get('token'),
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
 }
 
@@ -34,8 +31,8 @@ export function useAddToCart() {
 
   return useMutation({
     mutationFn: async (data: AddToCartRequest) => {
-      const response = await apiClient.post('/api/cart', data);
-      return response.data;
+      const response = await cartService.addToCart(data);
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cartKeys.list() });
@@ -58,8 +55,8 @@ export function useUpdateCartItem() {
       id: number;
       data: UpdateCartItemRequest;
     }) => {
-      const response = await apiClient.put(`/api/cart/${id}`, data);
-      return response.data;
+      const response = await cartService.updateCartItem(id, data);
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cartKeys.list() });
@@ -76,8 +73,8 @@ export function useRemoveCartItem() {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiClient.delete(`/api/cart/${id}`);
-      return response.data;
+      const response = await cartService.deleteCartItem(id);
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cartKeys.list() });
@@ -89,13 +86,14 @@ export function useRemoveCartItem() {
 }
 
 // Clear entire cart
+
 export function useClearCart() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async () => {
-      const response = await apiClient.delete('/api/cart');
-      return response.data;
+      const response = await cartService.clearCart();
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cartKeys.list() });

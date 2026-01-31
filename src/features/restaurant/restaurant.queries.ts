@@ -9,9 +9,7 @@ import type {
   RestaurantFilters,
 } from '@/types/api';
 
-// ============================================
-// QUERY KEYS - Centralized cache key management
-// ============================================
+//Query keys
 export const restaurantKeys = {
   all: ['restaurants'] as const,
   lists: () => [...restaurantKeys.all, 'list'] as const,
@@ -25,29 +23,20 @@ export const restaurantKeys = {
   recommended: () => [...restaurantKeys.all, 'recommended'] as const,
 };
 
-// ============================================
-// HOOKS - TanStack Query hooks with full states
-// ============================================
-
-/**
- * Get restaurants list with optional filters
- * Returns: { data, isLoading, isError, error, isFetching, isSuccess, refetch }
- */
+// Get restaurants list with optional filters
 export function useRestaurants(filters?: RestaurantFilters) {
   return useQuery({
     queryKey: restaurantKeys.list(filters || {}),
     queryFn: async () => {
       const response = await restaurantService.getRestaurants(filters);
-      return response.data; // ApiResponse.data = { restaurants, pagination }
+      return response.data;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes garbage collection
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
 
-/**
- * Get restaurant detail with menus and reviews
- */
+// Get restaurant detail with menus and reviews
 export function useRestaurantDetail(
   id: number,
   options?: { limitMenu?: number; limitReview?: number }
@@ -63,9 +52,7 @@ export function useRestaurantDetail(
   });
 }
 
-/**
- * Get best seller restaurants
- */
+// Get best seller restaurants
 export function useBestSellers(
   page: number = 1,
   limit: number = 20,
@@ -75,16 +62,14 @@ export function useBestSellers(
     queryKey: [...restaurantKeys.bestSellers(), { page, limit }],
     queryFn: async () => {
       const response = await restaurantService.getBestSellers({ page, limit });
-      return response.data; // { restaurants, pagination }
+      return response.data;
     },
     staleTime: 5 * 60 * 1000,
     enabled: options?.enabled ?? true,
   });
 }
 
-/**
- * Search restaurants by name
- */
+// Search restaurants by name
 export function useSearchRestaurants(
   query: string,
   page: number = 1,
@@ -105,9 +90,7 @@ export function useSearchRestaurants(
   });
 }
 
-/**
- * Get nearby restaurants (requires auth)
- */
+// Get nearby restaurants (requires auth)
 export function useNearbyRestaurants(range: number = 10, limit: number = 20) {
   return useQuery({
     queryKey: [...restaurantKeys.nearby(), { range, limit }],
@@ -116,19 +99,17 @@ export function useNearbyRestaurants(range: number = 10, limit: number = 20) {
       return response.data;
     },
     staleTime: 5 * 60 * 1000,
-    retry: 1, // Minimize retries for auth-required endpoints
+    retry: 1,
   });
 }
 
-/**
- * Get recommended restaurants (requires auth)
- */
+// Get recommended restaurants (requires auth)
 export function useRecommendedRestaurants(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: restaurantKeys.recommended(),
     queryFn: async () => {
       const response = await restaurantService.getRecommended();
-      return response.data; // { recommendations }
+      return response.data;
     },
     staleTime: 5 * 60 * 1000,
     enabled: options?.enabled ?? true,
@@ -136,9 +117,7 @@ export function useRecommendedRestaurants(options?: { enabled?: boolean }) {
   });
 }
 
-// ============================================
-// URL SYNC HOOK - Sync filters with URL params
-// ============================================
+// Sync filters with URL params
 export function useRestaurantFiltersFromURL(): RestaurantFilters {
   const searchParams = useSearchParams();
 

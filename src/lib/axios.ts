@@ -30,12 +30,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle 401/403 by clearing auth and redirecting
     if (error.response?.status === 401 || error.response?.status === 403) {
       if (typeof window !== 'undefined') {
         Cookies.remove('token');
         Cookies.remove('user');
-        // Only redirect if not already on auth page
         if (!window.location.pathname.includes('/auth')) {
           window.location.href = '/auth';
         }

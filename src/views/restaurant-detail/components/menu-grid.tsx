@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import MenuItem from './MenuItem';
+import MenuItem from './menu-item';
 import type { Menu } from '@/types/api';
 
 interface MenuGridProps {

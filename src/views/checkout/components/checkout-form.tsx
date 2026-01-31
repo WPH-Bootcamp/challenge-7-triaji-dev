@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCheckout } from './order.queries';
+import { useCheckout } from '@/features/orders/order.queries';
 import { useCart } from '@/features/cart/useCart';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

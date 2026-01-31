@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { useCart } from './useCart';
+import { useCart } from '@/features/cart/useCart';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/use-auth';
 import { ROUTES } from '@/constants';

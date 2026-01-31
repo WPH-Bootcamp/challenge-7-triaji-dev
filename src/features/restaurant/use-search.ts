@@ -72,8 +72,7 @@ export function useSearchRestaurants({
   const refetch = useCallback(async () => {
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate delay
-      // Return mock restaurants
+      await new Promise((resolve) => setTimeout(resolve, 800));
       const mockRestaurants: Restaurant[] = Array.from({ length: limit }).map(
         (_, i) => ({
           id: i + (page - 1) * limit + 1,

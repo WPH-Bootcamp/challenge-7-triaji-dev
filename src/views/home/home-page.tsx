@@ -1,39 +1,23 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
-import Hero from '@/views/home/components/hero';
-import HomeMenu from '@/views/home/components/home-menu';
-import Recommended from '@/views/home/components/recommended';
-import SearchResult from '@/views/home/components/search-result';
-import { useSearchState } from '@/features/restaurant/use-search';
 import { GeolocationProvider } from '@/components/providers/geolocation-provider';
-import { useScrollToTop } from '@/hooks/use-scroll-to-top';
+import Hero from './components/hero';
+import HomeMenu from './components/home-menu';
+import Recommended from './components/recommended';
+import SearchResult from './components/search-result';
+import { useHomePage } from '@/hooks/use-home-page';
 
 export default function HomePage() {
-  const [showSearchMode, setShowSearchMode] = useState(false);
-
-  // Custom hook for scroll-to-top logic
-  useScrollToTop();
-
   const {
+    showSearchMode,
     searchQuery,
     hasSearched,
     handleSearch,
     clearSearch,
     setSearchComplete,
-  } = useSearchState();
-
-  const handleToggleSearchMode = useCallback(() => {
-    setShowSearchMode((prev) => !prev);
-  }, []);
-
-  const handleSearchFromRecommended = useCallback(
-    (query: string) => {
-      handleSearch(query);
-      setShowSearchMode(false);
-    },
-    [handleSearch]
-  );
+    handleSearchFromRecommended,
+    hideSearchMode,
+  } = useHomePage();
 
   return (
     <GeolocationProvider autoRequest={true}>
@@ -51,7 +35,7 @@ export default function HomePage() {
         ) : showSearchMode ? (
           <SearchResult
             searchQuery=''
-            onClearSearch={() => setShowSearchMode(false)}
+            onClearSearch={hideSearchMode}
             onSearchComplete={setSearchComplete}
             onSearch={handleSearchFromRecommended}
           />

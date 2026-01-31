@@ -1,5 +1,3 @@
-// Cart feature exports
-export { default as CartSheet } from './CartSheet';
 export { useCart } from './useCart';
 export {
   useServerCart,

@@ -1,14 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import apiClient from '@/services/api-client';
-import type {
-  CheckoutRequest,
-  Order,
-  OrderStatus,
-  PaginatedResponse,
-} from '@/types/api';
-import { cartKeys } from '@/features/cart/cart.queries';
+'use client';
 
-// Query keys
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Cookies from 'js-cookie';
+import { orderService } from '@/services/order';
+import { cartKeys } from '@/features/cart/cart.queries';
+import type { CheckoutRequest, OrderStatus } from '@/types/api';
+
+// Query Keys
 export const orderKeys = {
   all: ['orders'] as const,
   lists: () => [...orderKeys.all, 'list'] as const,
@@ -16,19 +14,17 @@ export const orderKeys = {
     [...orderKeys.lists(), status, page] as const,
 };
 
-// Checkout mutation
+// Checkout - create order from menu items
 export function useCheckout() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: CheckoutRequest) => {
-      const response = await apiClient.post('/api/order/checkout', data);
-      return response.data;
+      const response = await orderService.checkout(data);
+      return response;
     },
     onSuccess: () => {
-      // Invalidate cart after successful checkout
       queryClient.invalidateQueries({ queryKey: cartKeys.list() });
-      // Invalidate orders to show new order
       queryClient.invalidateQueries({ queryKey: orderKeys.lists() });
     },
     onError: (error) => {
@@ -37,7 +33,7 @@ export function useCheckout() {
   });
 }
 
-// Get my orders
+// Get user's orders
 export function useMyOrders(
   status: OrderStatus = 'done',
   page: number = 1,
@@ -45,13 +41,12 @@ export function useMyOrders(
 ) {
   return useQuery({
     queryKey: orderKeys.list(status, page),
-    queryFn: async (): Promise<PaginatedResponse<Order>> => {
-      const response = await apiClient.get<PaginatedResponse<Order>>(
-        `/api/order/my-order?status=${status}&page=${page}&limit=${limit}`
-      );
+    queryFn: async () => {
+      const response = await orderService.getMyOrders({ status, page, limit });
       return response.data;
     },
-    enabled: typeof window !== 'undefined' && !!localStorage.getItem('token'),
-    staleTime: 60 * 1000, // 1 minute
+    enabled: typeof window !== 'undefined' && !!Cookies.get('token'),
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
 }

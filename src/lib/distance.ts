@@ -1,15 +1,13 @@
 import type { Restaurant } from '@/types/api';
 
-/**
- * Calculate distance between two coordinates using Haversine formula
- */
+// Calculate distance between two coordinates using Haversine formula
 export function calculateDistance(
   lat1: number,
   lng1: number,
   lat2: number,
   lng2: number
 ): number {
-  const R = 6371; // Earth's radius in km
+  const R = 6371;
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);
 
@@ -28,9 +26,7 @@ function toRad(deg: number): number {
   return deg * (Math.PI / 180);
 }
 
-/**
- * Format distance for display
- */
+// Format distance for display
 export function formatDistance(distanceKm: number): string {
   if (distanceKm < 1) {
     return `${Math.round(distanceKm * 1000)} m`;
@@ -38,15 +34,11 @@ export function formatDistance(distanceKm: number): string {
   return `${distanceKm.toFixed(1)} km`;
 }
 
-/**
- * Mock coordinates based on place name
- * In production, this would use geocoding API
- */
+// Mock coordinates based on place name
 export function getMockCoordinates(place?: string): {
   lat: number;
   lng: number;
 } {
-  // Default to Jakarta coordinates with some randomness
   const baseCoords = {
     lat: -6.2088 + (Math.random() - 0.5) * 0.1,
     lng: 106.8456 + (Math.random() - 0.5) * 0.1,
@@ -54,7 +46,6 @@ export function getMockCoordinates(place?: string): {
 
   if (!place) return baseCoords;
 
-  // Some mock mappings for common places
   const placeMappings: Record<string, { lat: number; lng: number }> = {
     Jakarta: { lat: -6.2088, lng: 106.8456 },
     'Jakarta Selatan': { lat: -6.2615, lng: 106.8106 },
@@ -66,7 +57,6 @@ export function getMockCoordinates(place?: string): {
     Surabaya: { lat: -7.2575, lng: 112.7521 },
   };
 
-  // Check if place contains any of the mapped locations
   for (const [key, coords] of Object.entries(placeMappings)) {
     if (place.toLowerCase().includes(key.toLowerCase())) {
       return {

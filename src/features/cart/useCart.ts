@@ -26,7 +26,7 @@ import {
 } from './cart.queries';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import type { CartItem, CartGrouped } from '@/types/api';
+import type { CartItem } from '@/types/api';
 
 export function useCart() {
   const dispatch = useAppDispatch();
@@ -47,9 +47,17 @@ export function useCart() {
 
   // Sync server cart to Redux when fetched
   useEffect(() => {
-    if (serverCart) {
-      const flatItems: CartItem[] = serverCart.flatMap(
-        (group: CartGrouped) => group.items
+    if (serverCart?.cart) {
+      const flatItems: CartItem[] = serverCart.cart.flatMap((group) =>
+        group.items.map((item) => ({
+          id: item.id,
+          menuId: item.menu.id,
+          restaurantId: group.restaurant.id,
+          name: item.menu.foodName,
+          price: item.menu.price,
+          quantity: item.quantity,
+          imageUrl: item.menu.image,
+        }))
       );
       dispatch(setCartItems(flatItems));
     }
@@ -63,7 +71,6 @@ export function useCart() {
       quantity: number = 1,
       menuData?: Partial<CartItem>
     ) => {
-      // Optimistic update
       const tempId = Date.now();
       const optimisticItem: CartItem = {
         id: tempId,
@@ -85,7 +92,6 @@ export function useCart() {
         });
         toast.success('Added to cart!');
       } catch (error) {
-        // Rollback on error
         dispatch(removeItem(tempId));
         toast.error('Failed to add to cart');
         console.error('Add to cart error:', error);
@@ -97,17 +103,14 @@ export function useCart() {
   // Update quantity with optimistic UI
   const handleUpdateQuantity = useCallback(
     async (id: number, quantity: number) => {
-      // Store previous state for rollback
       const previousItems = items;
       const previousQuantity = items.find((item) => item.id === id)?.quantity;
 
-      // Optimistic update
       dispatch(updateQuantity({ id, quantity }));
 
       try {
         await updateItemMutation.mutateAsync({ id, data: { quantity } });
       } catch (error) {
-        // Rollback on error
         if (previousQuantity !== undefined) {
           dispatch(updateQuantity({ id, quantity: previousQuantity }));
         } else {
@@ -123,17 +126,14 @@ export function useCart() {
   // Remove item with optimistic UI
   const handleRemoveItem = useCallback(
     async (id: number) => {
-      // Store item for rollback
       const removedItem = items.find((item) => item.id === id);
 
-      // Optimistic update
       dispatch(removeItem(id));
 
       try {
         await removeItemMutation.mutateAsync(id);
         toast.success('Item removed from cart');
       } catch (error) {
-        // Rollback on error
         if (removedItem) {
           dispatch(addItem(removedItem));
         }
@@ -146,17 +146,14 @@ export function useCart() {
 
   // Clear cart with optimistic UI
   const handleClearCart = useCallback(async () => {
-    // Store items for rollback
     const previousItems = items;
 
-    // Optimistic update
     dispatch(clearCart());
 
     try {
       await clearCartMutation.mutateAsync();
       toast.success('Cart cleared');
     } catch (error) {
-      // Rollback on error
       dispatch(setCartItems(previousItems));
       toast.error('Failed to clear cart');
       console.error('Clear cart error:', error);
