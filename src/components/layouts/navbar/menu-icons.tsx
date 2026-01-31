@@ -5,6 +5,7 @@ import {
   LogIn,
   UserPlus,
   LogOut,
+  MapPin,
 } from 'lucide-react';
 import { AvatarWithInitials } from '@/components/ui/avatar';
 import Image from 'next/image';
@@ -59,6 +60,12 @@ export const MenuIcons = {
   Logout: () => (
     <div className='mr-2 flex h-5 w-5 items-center justify-center rounded-full'>
       <LogOut className='h-4 w-4' />
+    </div>
+  ),
+
+  DeliveryAddress: () => (
+    <div className='mr-2 flex h-5 w-5 items-center justify-center rounded-full'>
+      <MapPin className='h-4 w-4' />
     </div>
   ),
 

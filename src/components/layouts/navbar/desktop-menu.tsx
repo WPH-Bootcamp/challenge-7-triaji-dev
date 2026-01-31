@@ -2,11 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/use-auth';
-import {
-  ROUTES,
-  AUTHENTICATED_MENU_ITEMS,
-  type NavMenuItem,
-} from '@/constants';
+import { ROUTES } from '@/constants/routes';
+import { USER_DROPDOWN_ITEMS, type NavMenuItem } from '@/constants/navbar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +16,7 @@ import {
 import { MenuIcons } from './menu-icons';
 import { AvatarWithInitials } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { Home } from 'lucide-react';
 
 interface DesktopMenuProps {
   isScrolled?: boolean;
@@ -29,6 +27,7 @@ const IconMap: Record<string, React.FC> = {
   Restaurant: MenuIcons.Restaurant,
   Cart: MenuIcons.Cart,
   Orders: MenuIcons.Orders,
+  DeliveryAddress: MenuIcons.DeliveryAddress,
   Logout: MenuIcons.Logout,
 };
 
@@ -93,7 +92,7 @@ function DesktopMenu({ isScrolled = false }: DesktopMenuProps) {
           >
             <div className='flex cursor-pointer items-center justify-center transition-transform hover:scale-110'>
               <AvatarWithInitials
-                src={user?.avatarUrl}
+                src={user?.avatar}
                 alt={user?.name || 'Avatar'}
                 name={user?.name}
                 size='lg'
@@ -110,22 +109,22 @@ function DesktopMenu({ isScrolled = false }: DesktopMenuProps) {
 
         <DropdownMenuContent className='w-64' align='end' sideOffset={5}>
           <DropdownMenuLabel className='font-normal'>
-            <div className='flex items-center space-x-3'>
-              <MenuIcons.Profile user={user || undefined} />
-              <div className='flex flex-col space-y-1'>
-                <p className='text-sm leading-none font-medium'>
-                  {user?.name || 'User'}
-                </p>
-                <p className='text-muted-foreground text-xs leading-none'>
-                  {user?.email || 'user@example.com'}
-                </p>
-              </div>
+            <div className='flex items-center gap-4 p-2'>
+              <AvatarWithInitials
+                src={user?.avatar}
+                alt={user?.name || 'Profile'}
+                name={user?.name}
+                size='md'
+              />
+              <p className='text-base leading-none font-semibold'>
+                {user?.name || 'User'}
+              </p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
-            {AUTHENTICATED_MENU_ITEMS.map((item, index) =>
+            {USER_DROPDOWN_ITEMS.map((item, index) =>
               renderMenuItem(item, index)
             )}
           </DropdownMenuGroup>

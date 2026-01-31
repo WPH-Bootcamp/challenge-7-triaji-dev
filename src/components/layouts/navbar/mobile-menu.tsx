@@ -2,12 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/features/auth/use-auth';
+import { ROUTES } from '@/constants/routes';
 import {
-  ROUTES,
   AUTHENTICATED_MENU_ITEMS,
   GUEST_MENU_ITEMS,
   type NavMenuItem,
-} from '@/constants';
+} from '@/constants/navbar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +30,7 @@ const IconMap: Record<string, React.FC> = {
   Restaurant: MenuIcons.Restaurant,
   Cart: MenuIcons.Cart,
   Orders: MenuIcons.Orders,
+  DeliveryAddress: MenuIcons.DeliveryAddress,
   SignIn: MenuIcons.SignIn,
   SignUp: MenuIcons.SignUp,
   Logout: MenuIcons.Logout,
@@ -97,7 +98,7 @@ function MobileMenu({ isScrolled = false }: MobileMenuProps) {
             {isAuthenticated ? (
               <div className='transition-transform hover:scale-105'>
                 <AvatarWithInitials
-                  src={user?.avatarUrl}
+                  src={user?.avatar}
                   alt={user?.name || 'Avatar'}
                   name={user?.name}
                   size='md'
@@ -130,7 +131,7 @@ function MobileMenu({ isScrolled = false }: MobileMenuProps) {
               <DropdownMenuLabel className='font-normal'>
                 <div className='flex items-center space-x-3'>
                   <AvatarWithInitials
-                    src={user?.avatarUrl}
+                    src={user?.avatar}
                     alt={user?.name || 'Profile'}
                     name={user?.name}
                     size='sm'

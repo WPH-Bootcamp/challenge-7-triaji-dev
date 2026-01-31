@@ -10,7 +10,20 @@ export interface NavMenuItem {
   className?: string;
 }
 
-export const AUTHENTICATED_MENU_ITEMS: NavMenuItem[] = [
+// Items for Desktop User Dropdown (Strictly matching design)
+export const USER_DROPDOWN_ITEMS: NavMenuItem[] = [
+  {
+    type: 'item',
+    label: 'Delivery Address',
+    href: ROUTES.PROFILE, // Assuming profile page has address tab
+    icon: 'DeliveryAddress',
+  },
+  { type: 'item', label: 'My Orders', href: ROUTES.ORDERS, icon: 'Orders' },
+  { type: 'logout', label: 'Logout', icon: 'Logout' },
+];
+
+// Items for Mobile Menu (Authenticated) - Includes Nav + User Items
+export const AUTHENTICATED_MOBILE_MENU: NavMenuItem[] = [
   { type: 'item', label: 'Home', href: ROUTES.HOME, icon: 'Home' },
   {
     type: 'item',
@@ -19,10 +32,12 @@ export const AUTHENTICATED_MENU_ITEMS: NavMenuItem[] = [
     icon: 'Restaurant',
   },
   { type: 'item', label: 'Cart', href: ROUTES.CART, icon: 'Cart' },
-  { type: 'item', label: 'Orders', href: ROUTES.ORDERS, icon: 'Orders' },
   { type: 'separator' },
-  { type: 'logout', label: 'Sign Out', icon: 'Logout' },
+  ...USER_DROPDOWN_ITEMS,
 ];
+
+// Keep for backward compatibility if needed, or deprecate
+export const AUTHENTICATED_MENU_ITEMS = AUTHENTICATED_MOBILE_MENU;
 
 export const GUEST_MENU_ITEMS: NavMenuItem[] = [
   { type: 'item', label: 'Sign In', href: ROUTES.AUTH, icon: 'SignIn' },

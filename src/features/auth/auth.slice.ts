@@ -24,10 +24,9 @@ const getUserFromCookie = (): User | null => {
 };
 
 const initialState: AuthState = {
-  user: getUserFromCookie(),
-  token: typeof window !== 'undefined' ? Cookies.get('token') || null : null,
-  isAuthenticated:
-    typeof window !== 'undefined' ? !!Cookies.get('token') : false,
+  user: null,
+  token: null,
+  isAuthenticated: false,
 };
 
 const authSlice = createSlice({
