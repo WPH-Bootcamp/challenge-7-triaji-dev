@@ -44,8 +44,6 @@ export default function CheckoutPage() {
     cartGroups,
     onCheckoutSuccess: async () => {
       setSuccessOpen(true);
-      // We delay clearCart slightly or handle it in success modal close if preferred,
-      // but typically we clear it now so back button doesn't show cart.
       try {
         await clearCart();
       } catch (e) {
@@ -75,9 +73,9 @@ export default function CheckoutPage() {
   const finalTotal = grandTotal + deliveryFee + serviceFee;
 
   return (
-    <div className='min-h-screen bg-neutral-50 pt-24 pb-20 font-sans'>
-      <main className='container mx-auto max-w-6xl px-4'>
-        <h1 className='text-display-xs md:text-display-sm mb-8 font-extrabold text-neutral-900'>
+    <div className='min-h-screen bg-neutral-50 pb-20 font-sans md:pt-32'>
+      <main className='container mx-auto max-w-[1000px] px-4'>
+        <h1 className='text-display-xs md:text-display-md mb-8 font-extrabold text-neutral-900'>
           Checkout
         </h1>
 
