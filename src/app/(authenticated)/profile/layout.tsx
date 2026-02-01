@@ -12,7 +12,7 @@ export default function ProfileLayout({
       <div className='container mx-auto max-w-6xl px-4'>
         <div className='flex flex-col gap-8 lg:flex-row'>
           {/* Sidebar (Left Column) */}
-          <div className='w-full shrink-0 lg:w-64'>
+          <div className='w-full shrink-0 lg:w-64 md:block hidden'>
             <ProfileSidebar />
           </div>
 

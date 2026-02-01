@@ -8,6 +8,7 @@ import { ROUTES } from '@/constants/routes';
 import { useRouter, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { Separator } from '@/components/ui/separator';
 
 export function ProfileSidebar() {
   const { user, logout } = useAuth();
@@ -36,7 +37,7 @@ export function ProfileSidebar() {
 
   return (
     <Card className='h-fit border-none shadow-none md:border md:border-neutral-200 md:shadow-sm'>
-      <CardContent className='p-0 md:p-6'>
+      <CardContent>
         {/* Profile Section */}
         <div className='mb-6 hidden flex-row items-center gap-4 md:flex'>
           <AvatarWithInitials
@@ -46,16 +47,13 @@ export function ProfileSidebar() {
             className='border border-neutral-200'
           />
           <div className='overflow-hidden'>
-            <h3 className='truncate font-bold text-neutral-900'>
+            <h3 className='truncate text-lg-custom font-bold text-neutral-900'>
               {user?.name || 'User'}
             </h3>
-            <p className='truncate text-xs text-neutral-500'>
-              {user?.email || 'user@example.com'}
-            </p>
           </div>
         </div>
 
-        <div className='mb-6 hidden h-px bg-neutral-100 md:block' />
+        <Separator className='mb-6' />
 
         {/* Navigation */}
         <nav className='flex flex-row gap-2 overflow-x-auto md:flex-col md:overflow-visible'>
